@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Business Analytics Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .chart-container { position: relative; height: 300px; width: 100%; }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-900 font-sans">
+
+    <nav class="bg-white border-b px-8 py-4 mb-8">
+        <h1 class="text-2xl font-bold text-blue-600">Growth Insights Dashboard</h1>
+    </nav>
+
+    <main class="max-w-7xl mx-auto px-4 grid grid-cols-1 md:grid-cols-2 gap-6">
+        
+        <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+            <h2 class="text-sm font-semibold text-slate-500 uppercase tracking-wider mb-4">Monthly Revenue ($)</h2>
+            <div class="chart-container">
+                <canvas id="revenueChart"></canvas>
+            </div>
+        </div>
+
+        <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+            <h2 class="text-sm font-semibold text-slate-500 uppercase tracking-wider mb-4">Total Leads Generated</h2>
+            <div class="chart-container">
+                <canvas id="leadsChart"></canvas>
+            </div>
+        </div>
+
+        <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 md:col-span-2 flex flex-col items-center">
+            <h2 class="text-sm font-semibold text-slate-500 uppercase tracking-wider mb-4 w-full">Traffic Distribution</h2>
+            <div class="chart-container" style="height: 400px; max-width: 400px;">
+                <canvas id="distributionChart"></canvas>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        const ctxData = {{ data | tojson }};
+
+        // Revenue Chart
+        new Chart(document.getElementById('revenueChart'), {
+            type: 'line',
+            data: {
+                labels: ctxData.months,
+                datasets: [{
+                    label: 'Revenue',
+                    data: ctxData.revenue,
+                    borderColor: '#2563eb',
+                    backgroundColor: 'rgba(37, 99, 235, 0.1)',
+                    fill: true,
+                    tension: 0.4
+                }]
+            },
+            options: { maintainAspectRatio: false }
+        });
+
+        // Leads Chart
+        new Chart(document.getElementById('leadsChart'), {
+            type: 'bar',
+            data: {
+                labels: ctxData.months,
+                datasets: [{
+                    label: 'Leads',
+                    data: ctxData.leads,
+                    backgroundColor: '#10b981',
+                    borderRadius: 6
+                }]
+            },
+            options: { maintainAspectRatio: false }
+        });
+
+        // Distribution Chart
+        new Chart(document.getElementById('distributionChart'), {
+            type: 'doughnut',
+            data: {
+                labels: ctxData.sources,
+                datasets: [{
+                    data: ctxData.shares,
+                    backgroundColor: ['#3b82f6', '#10b981', '#f59e0b', '#ef4444'],
+                    hoverOffset: 4
+                }]
+            },
+            options: { maintainAspectRatio: false }
+        });
+    </script>
+</body>
+</html>
