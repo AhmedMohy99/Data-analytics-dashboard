@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Performance Analytics Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .card {
+            background: #ffffff;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h1>Overview Dashboard</h1>
+        <p>Real-time tracking of revenue, acquisition, and traffic sources.</p>
+    </div>
+
+    <div class="dashboard-grid">
+        <div class="card">
+            <h2>Revenue Growth ($)</h2>
+            <canvas id="revenueChart"></canvas>
+        </div>
+
+        <div class="card">
+            <h2>New Client Acquisition</h2>
+            <canvas id="acquisitionChart"></canvas>
+        </div>
+
+        <div class="card" style="grid-column: 1 / -1; max-width: 600px; margin: 0 auto; width: 100%;">
+            <h2 style="text-align: center;">Traffic Sources (%)</h2>
+            <canvas id="trafficChart"></canvas>
+        </div>
+    </div>
+
+    <script>
+        // Safely parse the data passed from Flask
+        const dashboardData = {{ data | tojson }};
+
+        // 1. Revenue Chart (Line)
+        new Chart(document.getElementById('revenueChart'), {
+            type: 'line',
+            data: {
+                labels: dashboardData.months,
+                datasets: [{
+                    label: 'Gross Revenue',
+                    data: dashboardData.revenue,
+                    borderColor: '#2563eb',
+                    backgroundColor: 'rgba(37, 99, 235, 0.1)',
+                    borderWidth: 2,
+                    fill: true,
+                    tension: 0.3
+                }]
+            }
+        });
+
+        // 2. Client Acquisition Chart (Bar)
+        new Chart(document.getElementById('acquisitionChart'), {
+            type: 'bar',
+            data: {
+                labels: dashboardData.months,
+                datasets: [{
+                    label: 'New Clients',
+                    data: dashboardData.client_acquisition,
+                    backgroundColor: '#10b981',
+                    borderRadius: 4
+                }]
+            }
+        });
+
+        // 3. Traffic Sources (Doughnut)
+        new Chart(document.getElementById('trafficChart'), {
+            type: 'doughnut',
+            data: {
+                labels: dashboardData.campaign_sources,
+                datasets: [{
+                    data: dashboardData.traffic_share,
+                    backgroundColor: ['#3b82f6', '#10b981', '#f59e0b', '#8b5cf6'],
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { position: 'bottom' }
+                }
+            }
+        });
+    </script>
+</body>
+</html>
